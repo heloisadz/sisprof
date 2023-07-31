@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="crudprof.css">
+    <title>Document</title>
+</head>
+<body>
+
+
+<?php
+##permite acesso as variaves dentro do aquivo conexao
+require_once('conexao.php');
+
+
+
+##cadastrar
+if(isset($_GET['cadastrar'])){
+        ##dados recebidos pelo metodo GET
+        $nome = $_GET["nome"];
+        $cpf = $_GET["cpf"];
+        $SIAPE=$_GET["SIAPE"];
+        $idade = $_GET["idade"];
+        $datanascimento = $_GET["datanascimento"];
+        $endereco = $_GET["endereco"];
+        $statusProf = $_GET["statusProf"];
+        
+
+        ##codigo SQL
+        $sql = "INSERT INTO Professor(nome) 
+                VALUES('$nome')";
+
+        ##junta o codigo sql a conexao do banco
+        $sqlcombanco = $conexao->prepare($sql);
+
+        ##executa o sql no banco de dados
+        if($sqlcombanco->execute())
+            {
+                echo " <p><strong>OK!</strong> o professor
+                $nome foi Incluido com sucesso!!!</p>"; 
+                echo " <button class='button'><a href='index.php'>voltar</a></button>";
+            }
+        }
+#######alterar
+if(isset($_POST['update'])){
+
+
+    ##dados recebidos pelo metodo POST
+    $nome = $_POST["nome"];
+    $cpf = $_POST["cpf"];
+    $SIAPE=$_POST["SIAPE"];
+    $idade = $_POST["idade"];
+    $datanascimento = $_POST["datanascimento"];
+    $endereco = $_POST["endereco"];
+    $statusProf = $_POST["statusProf"];
+    
+   
+      ##codigo sql
+    $sql = "UPDATE  Professor SET nome= :nome, cpf= :cpf, SIAPE= :SIAPE, idade= :idade, datanascimento= :datanascimento, enderecoProf= :enderecoProf, statusProf= :statusProf WHERE idProf= :idProf ";
+   
+    ##junta o codigo sql a conexao do banco
+    $stmt = $conexao->prepare($sql);
+
+    ##diz o paramentro e o tipo  do paramentros
+    $stmt->bindParam(':nome',$nome, PDO::PARAM_STR);
+    $stmt->bindParam(':cpf',$cpf, PDO::PARAM_STR);
+    $stmt->bindParam(':SIAPE',$SIAPE, PDO::PARAM_STR);
+    $stmt->bindParam(':idade',$idade, PDO::PARAM_INT);
+    $stmt->bindParam(':datanascimento',$datanascimento, PDO::PARAM_STR);
+    $stmt->bindParam(':endereco',$endereco, PDO::PARAM_STR);
+    $stmt->bindParam(':statusProf',$statusProf, PDO::PARAM_BOOL);
+    $stmt->execute();
+ 
+
+
+    if($stmt->execute())
+        {
+            echo " <p> <strong>OK!</strong> o professor
+             $nome foi Alterado com sucesso!!!</p>"; 
+
+            echo " <button class='button'><a href='index.php'>voltar</a></button>";
+        }
+
+}        
+
+
+##Excluir
+if(isset($_GET['excluir'])){
+    $idProf = $_GET['idProf'];
+    $sql ="DELETE FROM `Professor` WHERE idProf={$idProf}";
+    $conexao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);   
+    $stmt = $conexao->prepare($sql);
+    $stmt->execute();
+
+    if($stmt->execute())
+        {
+            echo "<p> <strong>OK!</strong> o professor
+             $nome foi excluido!!!</p>"; 
+
+            echo " <button class='button'><a href='listaprofs.php'>voltar</a></button>";
+        }
+
+}
+
+        
+?>
+
+</body>
+</html>
+
+
+
+
